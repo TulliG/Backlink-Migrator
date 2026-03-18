@@ -69,30 +69,11 @@ export class BMSettingTab extends PluginSettingTab {
 					});
 			});
 
-		containerEl.createEl('h3', {text: 'Source Folders'});
-        containerEl.createEl('p', {
-            text: 'Folders to monitor. Notes reaching the threshold here will be moved to the Target Folder.',
-            cls: 'setting-item-description' 
-        });
-
-		// source folders
-		this.plugin.settings.sourceFolders.forEach((path, index) => {
-			new Setting(containerEl)
-				.setName(path)
-				.addButton(button => {
-					button
-						.setIcon("trash")
-						.setTooltip("Remove this folder")
-						.onClick(async () => {
-							this.plugin.settings.sourceFolders.splice(index, 1);
-							await this.plugin.saveSettings();
-							this.display();
-						});
-				});
-		});
-
-		// suggested modal button
+		// add source folder button
 		new Setting(containerEl)
+			.setHeading()
+			.setName("Source Folders")
+			.setDesc("Folders to monitor. Notes reaching the threshold here will be moved to the Target Folder")
 			.addButton(button => {
 				button
 					.setButtonText("Add Source Folder")
@@ -101,7 +82,23 @@ export class BMSettingTab extends PluginSettingTab {
 						new FolderSuggestModal(this.app, this.plugin, this).open();
 					})
 			});
-		
+
+		// FolderSuggestModal 
+		this.plugin.settings.sourceFolders.forEach((path, index) => {
+			new Setting(containerEl)
+				.setName(path)
+				.addButton(button => {
+					button
+						.setIcon("trash")
+						.setTooltip("Remove this source folder")
+						.onClick(async () => {
+							this.plugin.settings.sourceFolders.splice(index, 1);
+							await this.plugin.saveSettings();
+							this.display();
+						});
+				});
+		});
 	}
 	
 }
+			
