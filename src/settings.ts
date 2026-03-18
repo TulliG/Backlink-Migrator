@@ -1,7 +1,6 @@
+import { FolderSuggestModal } from "fuzzy-suggest-modal";
 import type BacklinkMigrator from "main";
-import test from "node:test";
 import {App, TFolder, PluginSettingTab, Setting, Notice} from "obsidian";
-import { parse } from "path";
 
 export interface BMSettings {
 	threshold: number;
@@ -27,11 +26,11 @@ export class BMSettingTab extends PluginSettingTab {
 	display(): void {
 		const {containerEl} = this;
 		containerEl.empty();
-		containerEl.createEl('h2', {text: 'Backlink Migrator settings'});
 
 		const allFolders = this.app.vault.getAllLoadedFiles()
         	.filter(f => f instanceof TFolder) as TFolder[];
 
+		// threshold settings
 		new Setting(containerEl)
 			.setName("Backlink Threshold")
 			.setDesc("Minimum number of backlinks of a note to activate the migration of the note")
@@ -51,6 +50,7 @@ export class BMSettingTab extends PluginSettingTab {
 					})	
 			});
 
+		// target folder setting
 		new Setting(containerEl)
 			.setName("Target Folder")
 			.setDesc("Target folder where the notes will be moved to after they reach the backlink threshold")
@@ -66,8 +66,42 @@ export class BMSettingTab extends PluginSettingTab {
 						this.plugin.settings.targetFolder = value;
 						await this.plugin.saveSettings();
 						this.display();
+					});
+			});
+
+		containerEl.createEl('h3', {text: 'Source Folders'});
+        containerEl.createEl('p', {
+            text: 'Folders to monitor. Notes reaching the threshold here will be moved to the Target Folder.',
+            cls: 'setting-item-description' 
+        });
+
+		// source folders
+		this.plugin.settings.sourceFolders.forEach((path, index) => {
+			new Setting(containerEl)
+				.setName(path)
+				.addButton(button => {
+					button
+						.setIcon("trash")
+						.setTooltip("Remove this folder")
+						.onClick(async () => {
+							this.plugin.settings.sourceFolders.splice(index, 1);
+							await this.plugin.saveSettings();
+							this.display();
+						});
+				});
+		});
+
+		// suggested modal button
+		new Setting(containerEl)
+			.addButton(button => {
+				button
+					.setButtonText("Add Source Folder")
+					.setCta()
+					.onClick(() => {
+						new FolderSuggestModal(this.app, this.plugin, this).open();
 					})
-			})
+			});
+		
 	}
 	
 }

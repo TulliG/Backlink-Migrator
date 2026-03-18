@@ -1,4 +1,4 @@
-import {App, Editor, MarkdownView, Modal, Notice, Plugin} from 'obsidian';
+import { Plugin } from 'obsidian';
 import {DEFAULT_SETTINGS, BMSettingTab, BMSettings} from "./settings";
 
 export default class BacklinkMigrator extends Plugin {
