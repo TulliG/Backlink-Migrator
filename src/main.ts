@@ -1,5 +1,7 @@
 import { Plugin } from 'obsidian';
-import {DEFAULT_SETTINGS, BMSettingTab, BMSettings} from "./settings";
+import { DEFAULT_SETTINGS } from "./settings";
+import { BMSettingTab } from "./ui/settings-tab"; 
+import { BMSettings } from "./types";
 
 export default class BacklinkMigrator extends Plugin {
 
