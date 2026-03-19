@@ -17,6 +17,19 @@ export class BMSettingTab extends PluginSettingTab {
 		const allFolders = this.app.vault.getAllLoadedFiles()
         	.filter(f => f instanceof TFolder) as TFolder[];
 
+		// auto scan toggle
+		new Setting(containerEl)
+			.setName("Automatic scan")
+			.setDesc("Automatically scan and check for threshold when links are updated")
+			.addToggle(toggle => {
+				toggle
+					.setValue(this.plugin.settings.autoScan)
+					.onChange(async (value) => {
+						this.plugin.settings.autoScan = value;
+						await this.plugin.saveSettings();
+					});
+			});
+
 		// threshold settings
 		new Setting(containerEl)
 			.setName("Backlink Threshold")

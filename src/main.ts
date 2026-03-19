@@ -17,9 +17,11 @@ export default class BacklinkMigrator extends Plugin {
                 return;
             }
             // TODO: metodo di scan
+
+            // TODO: comando per lo scan manuale
+
+            // TODO: scan automatico dentro l'if (con altro if per il metodo di conteggio)
         })
-
-
     }
 
     async onunload() {
