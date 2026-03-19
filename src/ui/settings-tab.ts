@@ -1,6 +1,7 @@
 import { App, TFolder, PluginSettingTab, Setting } from "obsidian";
 import type BacklinkMigrator from "../main";
 import { FolderSuggestModal } from "./fuzzy-suggest-modal";
+import { CalculationMethod } from "types";
 
 export class BMSettingTab extends PluginSettingTab {
 	plugin: BacklinkMigrator;
@@ -30,9 +31,24 @@ export class BMSettingTab extends PluginSettingTab {
 					});
 			});
 
+		// calculation method dropdown
+		new Setting(containerEl)
+			.setName("Backlinks calculation method")
+			.setDesc("Chooses how backlinks are counted to reach the threshold")
+			.addDropdown(dropdown => {
+				dropdown
+					.addOption(CalculationMethod.UNIQUE, "Count unique linking notes")
+					.addOption(CalculationMethod.TOTAL, "Count total link mentions")
+					.setValue(this.plugin.settings.calculationMethod)
+					.onChange(async (value: CalculationMethod) => {
+						this.plugin.settings.calculationMethod = value;
+						await this.plugin.saveSettings();
+					});
+			});
+
 		// threshold settings
 		new Setting(containerEl)
-			.setName("Backlink Threshold")
+			.setName("Backlink threshold")
 			.setDesc("Minimum number of backlinks of a note to activate the migration of the note")
 			.addText(text => {
 				text.inputEl.type = "number";
@@ -52,7 +68,7 @@ export class BMSettingTab extends PluginSettingTab {
 
 		// target folder setting
 		new Setting(containerEl)
-			.setName("Target Folder")
+			.setName("Target folder")
 			.setDesc("Target folder where the notes will be moved to after they reach the backlink threshold")
 			.addDropdown(dropdown => {
 				allFolders.forEach(folder => {
@@ -72,7 +88,7 @@ export class BMSettingTab extends PluginSettingTab {
 		// add source folder button
 		new Setting(containerEl)
 			.setHeading()
-			.setName("Source Folders")
+			.setName("Source folders")
 			.setDesc("Folders to monitor. Notes reaching the threshold here will be moved to the Target Folder")
 			.addButton(button => {
 				button

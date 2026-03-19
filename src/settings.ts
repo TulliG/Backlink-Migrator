@@ -1,10 +1,11 @@
-import { BMSettings } from "types";
+import { BMSettings, CalculationMethod } from "types";
 
 export const DEFAULT_SETTINGS: BMSettings = {
 	threshold: 10,
 	targetFolder: '',
 	sourceFolders: [],
-	autoScan: false
+	autoScan: false,
+	calculationMethod: CalculationMethod.UNIQUE
 }
 
 			
