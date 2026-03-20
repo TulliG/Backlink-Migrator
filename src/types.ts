@@ -1,9 +1,16 @@
+import { TFile } from "obsidian";
+
 export interface BMSettings {
     threshold: number;
     targetFolder: string;
     sourceFolders: string[];
     autoScan: boolean;
     calculationMethod: CalculationMethod
+}
+
+export interface ScanResult {
+    file: TFile;
+    backlinks: number
 }
 
 export enum CalculationMethod {

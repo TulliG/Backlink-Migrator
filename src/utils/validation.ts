@@ -1,6 +1,7 @@
 import { Notice } from "obsidian";
 import { BMSettings } from "types";
 
+// checks if the plugin is correctly configured
 export function isConfigValid(settings: BMSettings): boolean {
 
     if (!settings.targetFolder || settings.targetFolder === '') {
