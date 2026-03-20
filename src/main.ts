@@ -16,12 +16,12 @@ export default class BacklinkMigrator extends Plugin {
             if (!isConfigValid(this.settings)) {
                 return;
             }
-            // TODO: metodo di scan
+            // TODO: metodo di scan (sempre con il metodo di conteggio)
+        });
 
-            // TODO: comando per lo scan manuale
+        // TODO: comando per lo scan manuale
 
-            // TODO: scan automatico dentro l'if (con altro if per il metodo di conteggio)
-        })
+        // TODO: scan automatico dentro l'if (con altro if per il metodo di conteggio)
     }
 
     async onunload() {

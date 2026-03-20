@@ -10,3 +10,5 @@ export enum CalculationMethod {
     UNIQUE = "unique",
     TOTAL = "total"
 }
+
+export type ResolvedLinks = Record<string, Record<string, number>>;
