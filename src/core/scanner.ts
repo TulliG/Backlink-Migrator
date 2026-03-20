@@ -71,7 +71,6 @@ function evaluateFile(app: App, settings: BMSettings, file: TFile): ScanResult |
     } else {
         backlinks = countTotalLinks(file.path, resolvedLinks)
     }
-
     if (backlinks >= settings.threshold) {
         return { file, backlinks};
     }
