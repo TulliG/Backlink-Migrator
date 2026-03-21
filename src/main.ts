@@ -1,10 +1,11 @@
-import { Notice, Plugin } from 'obsidian';
+import { Notice, Plugin, TFile } from 'obsidian';
 import { DEFAULT_SETTINGS } from "./settings";
 import { BMSettingTab } from "./ui/settings-tab"; 
-import { BMSettings } from "./types";
+import { BMSettings, ScanResult } from "./types";
 import { isConfigValid } from 'utils/validation';
-import { runFullScan } from 'core/scanner';
+import { runFullScan, scanModifiedFile } from 'core/scanner';
 import { MigrationDashboardModal } from 'ui/migration-modal';
+import { migrateFiles } from 'core/migrator';
 
 export default class BacklinkMigrator extends Plugin {
 
@@ -29,6 +30,19 @@ export default class BacklinkMigrator extends Plugin {
         });
 
         // TODO: scan automatico dentro l'if (con altro if per il metodo di conteggio)
+        this.registerEvent(
+            this.app.metadataCache.on("changed", async (file: TFile) => {
+                if (!this.settings.autoScan) return;
+
+                if (!this.settings.targetFolder || this.settings.sourceFolders.length === 0 || this.settings.threshold <= 0) return;
+
+                const results = scanModifiedFile(this.app, this.settings, file);
+
+                if (results.length > 0) {
+                    await this.runAutoMigration(results);
+                }
+            })
+        );
     }
 
     async onunload() {
@@ -45,8 +59,8 @@ export default class BacklinkMigrator extends Plugin {
 
     private runManualScan() {
         if (!isConfigValid(this.settings)) {
-                return;
-            }
+            return;
+        }
 
         new Notice("Scanning source folders...");
         const results = runFullScan(this.app, this.settings);
@@ -55,6 +69,17 @@ export default class BacklinkMigrator extends Plugin {
             new Notice("No notes to move found");
         } else {
             new MigrationDashboardModal(this.app, this, results).open();
+        }
+    }
+
+    private async runAutoMigration(results: ScanResult[] ) {
+        const targetFolder = this.settings.targetFolder;
+        const files = results.map(r => r.file);
+        
+        const movedCount = await migrateFiles(this.app, files, targetFolder);
+
+        if (movedCount > 0) {
+            new Notice(`Auto-migrator: moved ${movedCount} notes to ${targetFolder}`);
         }
     }
 }

@@ -1,3 +1,4 @@
+import { migrateFiles } from "core/migrator";
 import BacklinkMigrator from "main";
 import { App, Modal, TFile, Setting, Notice } from "obsidian";
 import { ScanResult } from "types";
@@ -70,18 +71,7 @@ export class MigrationDashboardModal extends Modal {
         }
 
         const targetFolder = this.plugin.settings.targetFolder;
-        let movedCount = 0;
-
-        for (const file of this.selectedFiles) {
-            const newPath = `${targetFolder}/${file.name}`;
-
-            try {
-                await this.app.fileManager.renameFile(file, newPath);
-                movedCount++;
-            } catch (error) {
-                console.error(`Error moving file ${file.name}:`, error);
-            }
-        }
+        let movedCount = await migrateFiles(this.app, this.selectedFiles, targetFolder);
 
         new Notice(`Successfully moved ${movedCount} notes to ${targetFolder}`);
     }
