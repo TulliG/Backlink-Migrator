@@ -29,12 +29,12 @@ export default class BacklinkMigrator extends Plugin {
             }
         });
 
-        // TODO: scan automatico dentro l'if (con altro if per il metodo di conteggio)
+        // auto-scan 
         this.registerEvent(
             this.app.metadataCache.on("changed", async (file: TFile) => {
                 if (!this.settings.autoScan) return;
 
-                if (!this.settings.targetFolder || this.settings.sourceFolders.length === 0 || this.settings.threshold <= 0) return;
+                if (!isConfigValid(this.settings, true)) return;
 
                 const results = scanModifiedFile(this.app, this.settings, file);
 
@@ -74,12 +74,13 @@ export default class BacklinkMigrator extends Plugin {
 
     private async runAutoMigration(results: ScanResult[] ) {
         const targetFolder = this.settings.targetFolder;
-        const files = results.map(r => r.file);
-        
-        const movedCount = await migrateFiles(this.app, files, targetFolder);
 
-        if (movedCount > 0) {
-            new Notice(`Auto-migrator: moved ${movedCount} notes to ${targetFolder}`);
+        for (const r of results) {
+            const movedCount = await migrateFiles(this.app, [r.file], targetFolder);
+
+            if (movedCount > 0) {
+                new Notice(`Auto-migrated: ${r.file.basename} (${r.backlinks} backlinks)`);
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 import BacklinkMigrator from "main";
 import { FuzzySuggestModal, TFolder, App, Notice } from "obsidian";
 import { BMSettingTab } from "./settings-tab";
+import { isSource } from "utils/paths";
 
 export class FolderSuggestModal extends FuzzySuggestModal<TFolder> {
     plugin: BacklinkMigrator;
@@ -17,10 +18,10 @@ export class FolderSuggestModal extends FuzzySuggestModal<TFolder> {
             .filter(f => f instanceof TFolder) as TFolder[];
 
         return allFolders.filter(f => {
-            const isSource = this.plugin.settings.sourceFolders.includes(f.path);
+            const isSourceFolder = isSource(f.path, this.plugin.settings.sourceFolders);
             const isTarget = f.path == this.plugin.settings.targetFolder;
             const isRoot = f.path === "/";
-            return !isSource && !isTarget && !isRoot;
+            return !isSourceFolder && !isTarget && !isRoot;
         });
     }
 

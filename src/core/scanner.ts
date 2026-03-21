@@ -1,6 +1,7 @@
 import { App, TFile } from "obsidian";
 import { BMSettings, CalculationMethod, ScanResult } from "types";
 import { countTotalLinks, countUniqueLinks } from "./counter";
+import { isSource } from "utils/paths";
 
 const linkCache: Record<string, string[]> = {};
 
@@ -49,14 +50,6 @@ export function scanModifiedFile (app: App, settings: BMSettings, modifiedFile: 
         }
     }
     return results;
-}
-
-// helper function that checks if a file is in a SourceFolder
-function isSource(filePath: string, sourceFolders: string[]): boolean {
-    return sourceFolders.some(folder => {
-        const normalized = folder.endsWith("/") ? folder : folder + "/";
-        return filePath.startsWith(normalized);
-    });
 }
 
 // calculates the backlinks of a single file and checks if it meets the threshold

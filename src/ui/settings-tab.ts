@@ -2,6 +2,7 @@ import { App, TFolder, PluginSettingTab, Setting } from "obsidian";
 import type BacklinkMigrator from "../main";
 import { FolderSuggestModal } from "./fuzzy-suggest-modal";
 import { CalculationMethod } from "types";
+import { isSource } from "utils/paths";
 
 export class BMSettingTab extends PluginSettingTab {
 	plugin: BacklinkMigrator;
@@ -72,8 +73,9 @@ export class BMSettingTab extends PluginSettingTab {
 			.setDesc("Target folder where the notes will be moved to after they reach the backlink threshold")
 			.addDropdown(dropdown => {
 				allFolders.forEach(folder => {
-					const isSource = this.plugin.settings.sourceFolders.includes(folder.path);
-					if (folder.path === this.plugin.settings.targetFolder || !isSource) {
+					const isSourceFolder = isSource(folder.path, this.plugin.settings.sourceFolders);
+
+					if (folder.path === this.plugin.settings.targetFolder || !isSourceFolder) {
 						dropdown.addOption(folder.path, folder.path);
 					}
 				});
