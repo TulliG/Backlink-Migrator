@@ -4,6 +4,7 @@ import { BMSettingTab } from "./ui/settings-tab";
 import { BMSettings } from "./types";
 import { isConfigValid } from 'utils/validation';
 import { runFullScan } from 'core/scanner';
+import { MigrationDashboardModal } from 'ui/migration-modal';
 
 export default class BacklinkMigrator extends Plugin {
 
@@ -53,9 +54,7 @@ export default class BacklinkMigrator extends Plugin {
         if (results.length <= 0) {
             new Notice("No notes to move found");
         } else {
-            // TODO: dashboard che fa vedere 
+            new MigrationDashboardModal(this.app, this, results).open();
         }
-
-        
     }
 }
