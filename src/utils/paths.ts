@@ -1,8 +1,12 @@
-// function that checks if a file is in a SourceFolder
+// function that checks if a folder or a file is/is in a Source Folder
 export function isSource(filePath: string, sourceFolders: string[]): boolean {
     return sourceFolders.some(folder => {
-        const normalized = folder.endsWith("/") ? folder : folder + "/";
-        return filePath.startsWith(normalized);
+        const cleanFolder = folder.replace(/\/$/, "");
+        const cleanPath = filePath.replace(/\/$/, "");
+        
+        if (cleanPath === cleanFolder) return true;
+        
+        return cleanPath.startsWith(cleanFolder + "/");
     });
 }
 

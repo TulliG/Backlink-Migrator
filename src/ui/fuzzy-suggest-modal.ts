@@ -35,5 +35,4 @@ export class FolderSuggestModal extends FuzzySuggestModal<TFolder> {
         new Notice(`Added: ${item.path}`);
         this.settingTab.display();
     }
-
 }

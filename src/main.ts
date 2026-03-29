@@ -31,7 +31,7 @@ export default class BacklinkMigrator extends Plugin {
 
         // auto-scan 
         this.registerEvent(
-            this.app.metadataCache.on("changed", async (file: TFile) => {
+            this.app.metadataCache.on("resolve", async (file: TFile) => {
                 if (!this.settings.autoScan) return;
 
                 if (!isConfigValid(this.settings, true)) return;
