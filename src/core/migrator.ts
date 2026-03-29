@@ -4,7 +4,8 @@ export async function migrateFiles(app: App, files: Iterable<TFile>, targetFolde
     let movedCount = 0;
 
     for (const f of files) {
-        const newPath = `${targetFolder}/${f.name}`;
+        const normalizedTarget = targetFolder === "/" ? "" : targetFolder;
+        const newPath = normalizedTarget === "" ? f.name : `${normalizedTarget.replace(/\/$/, "")}/${f.name}`;
 
         try {
             await app.fileManager.renameFile(f, newPath);

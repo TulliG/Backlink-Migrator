@@ -4,7 +4,7 @@ import { BMSettings } from "types";
 // checks if the plugin is correctly configured
 export function isConfigValid(settings: BMSettings, silent: boolean = false): boolean {
 
-    if (!settings.targetFolder || settings.targetFolder === '') {
+    if (typeof settings.targetFolder !== 'string') {
         if (!silent) new Notice("Backlink Migrator: Target folder is missing. Please check settings.");
         return false;
     }

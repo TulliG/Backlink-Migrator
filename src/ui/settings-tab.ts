@@ -101,7 +101,7 @@ export class BMSettingTab extends PluginSettingTab {
 					})
 			});
 
-		// FolderSuggestModal 
+		// source folders list
 		this.plugin.settings.sourceFolders.forEach((path, index) => {
 			new Setting(containerEl)
 				.setName(path)

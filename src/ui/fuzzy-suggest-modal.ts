@@ -20,7 +20,7 @@ export class FolderSuggestModal extends FuzzySuggestModal<TFolder> {
         return allFolders.filter(f => {
             const isSourceFolder = isSource(f.path, this.plugin.settings.sourceFolders);
             const isTarget = f.path == this.plugin.settings.targetFolder;
-            const isRoot = f.path === "/";
+            const isRoot = f.isRoot();
             return !isSourceFolder && !isTarget && !isRoot;
         });
     }
