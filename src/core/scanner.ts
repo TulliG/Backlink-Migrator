@@ -3,7 +3,7 @@ import { BMSettings, CalculationMethod, ScanResult } from "types";
 import { countTotalLinks, countUniqueLinks } from "./counter";
 import { isSource } from "utils/paths";
 
-const linkCache: Record<string, string[]> = {};
+let linkCache: Record<string, string[]> = {};
 
 // scans all the source folders and returns a list of files with a backlink count above the threshold
 export function runFullScan(app: App, settings: BMSettings): ScanResult[] {
@@ -68,4 +68,9 @@ function evaluateFile(app: App, settings: BMSettings, file: TFile): ScanResult |
         return { file, backlinks};
     }
     return null;
+}
+
+// function to reset the cache
+export function clearScannerCache() {
+    linkCache = {};
 }

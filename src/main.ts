@@ -1,15 +1,43 @@
-import { Notice, Plugin, TFile } from 'obsidian';
+import { Notice, Plugin, TFile, debounce } from 'obsidian';
 import { DEFAULT_SETTINGS } from "./settings";
 import { BMSettingTab } from "./ui/settings-tab"; 
 import { BMSettings, ScanResult } from "./types";
 import { isConfigValid } from 'utils/validation';
-import { runFullScan, scanModifiedFile } from 'core/scanner';
+import { clearScannerCache, runFullScan, scanModifiedFile } from 'core/scanner';
 import { MigrationDashboardModal } from 'ui/migration-modal';
 import { migrateFiles } from 'core/migrator';
 
 export default class BacklinkMigrator extends Plugin {
 
     settings: BMSettings;
+
+    private filesToScan: Set<TFile> = new Set();
+
+    private processPendingScans = debounce(async () => {
+        if (!this.settings.autoScan || !isConfigValid(this.settings, true)) {
+            this.filesToScan.clear();
+            return;
+        }
+
+        const resultsToMigrate: ScanResult[] = [];
+
+        for (const file of this.filesToScan) {
+            const results = scanModifiedFile(this.app, this.settings, file);
+            resultsToMigrate.push(...results);
+        }
+
+        this.filesToScan.clear();
+
+        const uniqueResultsMap = new Map<string, ScanResult>();
+        for (const res of resultsToMigrate) {
+            uniqueResultsMap.set(res.file.path, res);
+        }
+        const uniqueResults = Array.from(uniqueResultsMap.values());
+
+        if (uniqueResults.length > 0) {
+            await this.runAutoMigration(uniqueResults);
+        }
+    }, 2000, true);
     
     async onload() {
         await this.loadSettings();
@@ -34,19 +62,14 @@ export default class BacklinkMigrator extends Plugin {
             this.app.metadataCache.on("resolve", async (file: TFile) => {
                 if (!this.settings.autoScan) return;
 
-                if (!isConfigValid(this.settings, true)) return;
-
-                const results = scanModifiedFile(this.app, this.settings, file);
-
-                if (results.length > 0) {
-                    await this.runAutoMigration(results);
-                }
+                this.filesToScan.add(file);
+                this.processPendingScans();
             })
         );
     }
 
     async onunload() {
-    
+        clearScannerCache();
     }
 
     async loadSettings() {
@@ -75,12 +98,12 @@ export default class BacklinkMigrator extends Plugin {
     private async runAutoMigration(results: ScanResult[] ) {
         const targetFolder = this.settings.targetFolder;
 
-        for (const r of results) {
-            const movedCount = await migrateFiles(this.app, [r.file], targetFolder);
+        const filesToMove = results.map(r => r.file);
+        
+        const movedCount = await migrateFiles(this.app, filesToMove, targetFolder);
 
-            if (movedCount > 0) {
-                new Notice(`Auto-migrated: ${r.file.basename} (${r.backlinks} backlinks)`);
-            }
+        if (movedCount > 0) {
+            new Notice(`Auto-migrated ${movedCount} notes to ${targetFolder}`);
         }
     }
 }
