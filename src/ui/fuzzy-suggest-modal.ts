@@ -15,7 +15,7 @@ export class FolderSuggestModal extends FuzzySuggestModal<TFolder> {
 
     getItems(): TFolder[] {
         const allFolders = this.app.vault.getAllLoadedFiles()
-            .filter(f => f instanceof TFolder) as TFolder[];
+            .filter(f => f instanceof TFolder);
 
         return allFolders.filter(f => {
             const isSourceFolder = isSource(f.path, this.plugin.settings.sourceFolders);

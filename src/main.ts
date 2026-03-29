@@ -44,7 +44,7 @@ export default class BacklinkMigrator extends Plugin {
         this.addSettingTab(new BMSettingTab(this.app, this));
         
         // ribbon icon that runs a manual scan
-        this.addRibbonIcon("scan-text", "Run manual scan for Backlink Migrator", (event: MouseEvent) => {
+        this.addRibbonIcon("scan-text", "Run manual scan for backlink migrator", (event: MouseEvent) => {
             this.runManualScan();
         });
 

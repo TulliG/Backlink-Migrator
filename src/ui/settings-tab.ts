@@ -17,7 +17,7 @@ export class BMSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		const allFolders = this.app.vault.getAllLoadedFiles()
-        	.filter(f => f instanceof TFolder) as TFolder[];
+        	.filter(f => f instanceof TFolder);
 
 		// auto scan toggle
 		new Setting(containerEl)
@@ -91,10 +91,10 @@ export class BMSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setHeading()
 			.setName("Source folders")
-			.setDesc("Folders to monitor. Notes reaching the threshold here will be moved to the Target Folder")
+			.setDesc("Folders to monitor, notes reaching the threshold here will be moved to the target folder")
 			.addButton(button => {
 				button
-					.setButtonText("Add Source Folder")
+					.setButtonText("Add source folder")
 					.setCta()
 					.onClick(() => {
 						new FolderSuggestModal(this.app, this.plugin, this).open();
