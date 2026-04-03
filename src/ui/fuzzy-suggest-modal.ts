@@ -29,10 +29,18 @@ export class FolderSuggestModal extends FuzzySuggestModal<TFolder> {
         return item.path;
     }
 
-    async onChooseItem(item: TFolder, evt: MouseEvent | KeyboardEvent) {
+    onChooseItem(item: TFolder, evt: MouseEvent | KeyboardEvent) {
         this.plugin.settings.sourceFolders.push(item.path);
-        await this.plugin.saveSettings();
-        new Notice(`Added: ${item.path}`);
-        this.settingTab.display();
+        
+        // Esegue il salvataggio asincrono senza alterare la firma del metodo
+        this.plugin.saveSettings()
+            .then(() => {
+                new Notice(`Added: ${item.path}`);
+                this.settingTab.display();
+            })
+            .catch((error) => {
+                console.error("Failed to save settings:", error);
+                new Notice("Error saving settings");
+            });
     }
 }

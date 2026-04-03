@@ -41,8 +41,8 @@ export class BMSettingTab extends PluginSettingTab {
 					.addOption(CalculationMethod.UNIQUE, "Count unique linking notes")
 					.addOption(CalculationMethod.TOTAL, "Count total link mentions")
 					.setValue(this.plugin.settings.calculationMethod)
-					.onChange(async (value: CalculationMethod) => {
-						this.plugin.settings.calculationMethod = value;
+					.onChange(async (value) => {
+						this.plugin.settings.calculationMethod = value as CalculationMethod;
 						await this.plugin.saveSettings();
 					});
 			});
@@ -61,10 +61,9 @@ export class BMSettingTab extends PluginSettingTab {
                     		return;
 						}
 						
-						text.inputEl.style.border = "";
 						this.plugin.settings.threshold = parsedValue;
-						this.plugin.saveSettings();
-					})	
+						await this.plugin.saveSettings();
+					});
 			});
 
 		// target folder setting

@@ -9,7 +9,7 @@ import { migrateFiles } from 'core/migrator';
 
 export default class BacklinkMigrator extends Plugin {
 
-    settings: BMSettings;
+    settings!: BMSettings;
 
     private filesToScan: Set<TFile> = new Set();
 
@@ -68,12 +68,13 @@ export default class BacklinkMigrator extends Plugin {
         );
     }
 
-    async onunload() {
+    onunload() {
         clearScannerCache();
     }
 
     async loadSettings() {
-        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+        const data = (await this.loadData()) as Partial<BMSettings> | null;
+        this.settings = Object.assign({}, DEFAULT_SETTINGS, data);
     }
 
     async saveSettings() {
