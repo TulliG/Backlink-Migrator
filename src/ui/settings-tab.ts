@@ -35,7 +35,7 @@ export class BMSettingTab extends PluginSettingTab {
 		// toggle for scanning sub folders
 		new Setting(containerEl)
 			.setName("Scan subfolders")
-			.setDesc("If disabled, the plugin will only scan notes located exactly in the root of the selected source folders.")
+			.setDesc("If disabled, the plugin will only scan notes located exactly in the root of the selected source folders")
 			.addToggle(toggle => {
 				toggle
 					.setValue(this.plugin.settings.includeSubfolders)
