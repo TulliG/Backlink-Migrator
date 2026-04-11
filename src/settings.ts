@@ -5,7 +5,8 @@ export const DEFAULT_SETTINGS: BMSettings = {
 	targetFolder: '',
 	sourceFolders: [],
 	autoScan: false,
-	calculationMethod: CalculationMethod.UNIQUE
+	calculationMethod: CalculationMethod.UNIQUE,
+	includeSubfolders: true
 }
 
 			

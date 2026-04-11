@@ -14,7 +14,7 @@ export function runFullScan(app: App, settings: BMSettings): ScanResult[] {
     for (const file of allFiles) {
         linkCache[file.path] = Object.keys(resolvedLinks?.[file.path] || {}); 
 
-        if (isSource(file.path, settings.sourceFolders)) {
+        if (isSource(file.path, settings.sourceFolders, settings.includeSubfolders)) {
             const result = evaluateFile(app, settings, file);
             if (result) {
                 results.push(result);
@@ -38,7 +38,7 @@ export function scanModifiedFile (app: App, settings: BMSettings, modifiedFile: 
     linkCache[modifiedFile.path] = currentLinks;
 
     for (const targetPath of targetsToCheck) {
-        if (isSource(targetPath, settings.sourceFolders)) {
+        if (isSource(targetPath, settings.sourceFolders, settings.includeSubfolders)) {
             const targetFile = app.vault.getAbstractFileByPath(targetPath);
 
             if (targetFile instanceof TFile) {

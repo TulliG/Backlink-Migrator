@@ -18,7 +18,7 @@ export class FolderSuggestModal extends FuzzySuggestModal<TFolder> {
             .filter(f => f instanceof TFolder);
 
         return allFolders.filter(f => {
-            const isSourceFolder = isSource(f.path, this.plugin.settings.sourceFolders);
+            const isSourceFolder = isSource(f.path, this.plugin.settings.sourceFolders, this.plugin.settings.includeSubfolders);
             const isTarget = f.path == this.plugin.settings.targetFolder;
             const isRoot = f.isRoot();
             return !isSourceFolder && !isTarget && !isRoot;

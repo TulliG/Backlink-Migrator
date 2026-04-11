@@ -5,7 +5,8 @@ export interface BMSettings {
     targetFolder: string;
     sourceFolders: string[];
     autoScan: boolean;
-    calculationMethod: CalculationMethod
+    calculationMethod: CalculationMethod,
+    includeSubfolders: boolean
 }
 
 export interface ScanResult {

@@ -32,6 +32,19 @@ export class BMSettingTab extends PluginSettingTab {
 					});
 			});
 
+		// toggle for scanning sub folders
+		new Setting(containerEl)
+			.setName("Scan subfolders")
+			.setDesc("If disabled, the plugin will only scan notes located exactly in the root of the selected source folders.")
+			.addToggle(toggle => {
+				toggle
+					.setValue(this.plugin.settings.includeSubfolders)
+					.onChange(async (value) => {
+						this.plugin.settings.includeSubfolders = value;
+						await this.plugin.saveSettings();
+					});
+			});
+
 		// calculation method dropdown
 		new Setting(containerEl)
 			.setName("Backlinks calculation method")
@@ -72,7 +85,7 @@ export class BMSettingTab extends PluginSettingTab {
 			.setDesc("Target folder where the notes will be moved to after they reach the backlink threshold")
 			.addDropdown(dropdown => {
 				allFolders.forEach(folder => {
-					const isSourceFolder = isSource(folder.path, this.plugin.settings.sourceFolders);
+					const isSourceFolder = isSource(folder.path, this.plugin.settings.sourceFolders, this.plugin.settings.includeSubfolders);
 
 					if (folder.path === this.plugin.settings.targetFolder || !isSourceFolder) {
 						dropdown.addOption(folder.path, folder.path);
