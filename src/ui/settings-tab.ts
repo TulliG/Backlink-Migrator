@@ -99,6 +99,8 @@ export class BMSettingTab extends PluginSettingTab {
 					});
 			});
 
+		containerEl.createEl("hr");
+
 		// add source folder button
 		new Setting(containerEl)
 			.setHeading()
