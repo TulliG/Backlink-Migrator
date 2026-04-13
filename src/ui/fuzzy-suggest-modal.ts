@@ -17,11 +17,20 @@ export class FolderSuggestModal extends FuzzySuggestModal<TFolder> {
         const allFolders = this.app.vault.getAllLoadedFiles()
             .filter(f => f instanceof TFolder);
 
-        return allFolders.filter(f => {
-            const isSourceFolder = isSource(f.path, this.plugin.settings.sourceFolders, this.plugin.settings.includeSubfolders);
-            const isTarget = f.path == this.plugin.settings.targetFolder;
-            const isRoot = f.isRoot();
-            return !isSourceFolder && !isTarget && !isRoot;
+        const { sourceFolders, targetFolder, includeSubfolders } = this.plugin.settings;
+
+        return allFolders.filter((f: TFolder) => {
+            if (f.isRoot()) return false;
+            if (f.path === targetFolder) return false;
+
+            if (sourceFolders.includes(f.path)) return false;
+
+            if (includeSubfolders) {
+                const isSubfolderOfSource = sourceFolders.some(src => f.path.startsWith(src + "/"));
+                if (isSubfolderOfSource) return false;
+            }
+
+            return true;
         });
     }
 

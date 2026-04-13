@@ -2,7 +2,6 @@ import { App, TFolder, PluginSettingTab, Setting } from "obsidian";
 import type BacklinkMigrator from "../main";
 import { FolderSuggestModal } from "./fuzzy-suggest-modal";
 import { CalculationMethod } from "types";
-import { isSource } from "utils/paths";
 
 export class BMSettingTab extends PluginSettingTab {
 	plugin: BacklinkMigrator;
@@ -18,6 +17,10 @@ export class BMSettingTab extends PluginSettingTab {
 
 		const allFolders = this.app.vault.getAllLoadedFiles()
         	.filter(f => f instanceof TFolder);
+
+		new Setting(containerEl)
+            .setHeading()
+            .setName("General behavior");
 
 		// auto scan toggle
 		new Setting(containerEl)
@@ -79,31 +82,45 @@ export class BMSettingTab extends PluginSettingTab {
 					});
 			});
 
+		containerEl.createEl("hr");
+
+		new Setting(containerEl)
+            .setHeading()
+            .setName("Folder configuration");
+
 		// target folder setting
 		new Setting(containerEl)
 			.setName("Target folder")
 			.setDesc("Target folder where the notes will be moved to after they reach the backlink threshold")
 			.addDropdown(dropdown => {
-				allFolders.forEach(folder => {
-					const isSourceFolder = isSource(folder.path, this.plugin.settings.sourceFolders, this.plugin.settings.includeSubfolders);
+                const { sourceFolders, includeSubfolders, targetFolder } = this.plugin.settings;
 
-					if (folder.path === this.plugin.settings.targetFolder || !isSourceFolder) {
-						dropdown.addOption(folder.path, folder.path);
-					}
-				});
-				dropdown.setValue(this.plugin.settings.targetFolder)
-					.onChange(async (value) => {
-						this.plugin.settings.targetFolder = value;
-						await this.plugin.saveSettings();
-						this.display();
-					});
-			});
+                allFolders.forEach(folder => {
+                    if (folder.path === targetFolder) {
+                        dropdown.addOption(folder.path, folder.path);
+                        return;
+                    }
 
-		containerEl.createEl("hr");
+                    if (sourceFolders.includes(folder.path)) return;
+
+                    if (includeSubfolders) {
+                        const isSubfolder = sourceFolders.some(src => folder.path.startsWith(src + "/"));
+                        if (isSubfolder) return;
+                    }
+
+                    dropdown.addOption(folder.path, folder.path);
+                });
+
+                dropdown.setValue(this.plugin.settings.targetFolder)
+                    .onChange(async (value) => {
+                        this.plugin.settings.targetFolder = value;
+                        await this.plugin.saveSettings();
+                        this.display();
+                    });
+            });
 
 		// add source folder button
 		new Setting(containerEl)
-			.setHeading()
 			.setName("Source folders")
 			.setDesc("Folders to monitor, notes reaching the threshold here will be moved to the target folder")
 			.addButton(button => {
