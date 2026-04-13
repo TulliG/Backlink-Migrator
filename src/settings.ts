@@ -8,5 +8,3 @@ export const DEFAULT_SETTINGS: BMSettings = {
 	calculationMethod: CalculationMethod.UNIQUE,
 	includeSubfolders: true
 }
-
-			

@@ -6,5 +6,6 @@
 	"description": "An Obsidian plugin that automates file organization by relocating notes to a designated folder once they exceed a predefined threshold of backlinks.",
 	"author": "TulliG",
 	"authorUrl": "https://github.com/TulliG",
+	"fundingUrl": "paypal.me/GiulioParrucci",
 	"isDesktopOnly": true
 }

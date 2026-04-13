@@ -3,7 +3,7 @@ import { DEFAULT_SETTINGS } from "./settings";
 import { BMSettingTab } from "./ui/settings-tab"; 
 import { BMSettings, ScanResult } from "./types";
 import { isConfigValid } from 'utils/validation';
-import { clearScannerCache, runFullScan, scanModifiedFile } from 'core/scanner';
+import { BacklinkScanner } from 'core/scanner';
 import { MigrationDashboardModal } from 'ui/migration-modal';
 import { migrateFiles } from 'core/migrator';
 
@@ -12,6 +12,8 @@ export default class BacklinkMigrator extends Plugin {
     settings!: BMSettings;
 
     private filesToScan: Set<TFile> = new Set();
+
+    private scanner: BacklinkScanner = new BacklinkScanner();
 
     private processPendingScans = debounce(async () => {
         if (!this.settings.autoScan || !isConfigValid(this.settings, true)) {
@@ -22,7 +24,7 @@ export default class BacklinkMigrator extends Plugin {
         const resultsToMigrate: ScanResult[] = [];
 
         for (const file of this.filesToScan) {
-            const results = scanModifiedFile(this.app, this.settings, file);
+            const results = this.scanner.scanModifiedFile(this.app, this.settings, file);
             resultsToMigrate.push(...results);
         }
 
@@ -58,18 +60,20 @@ export default class BacklinkMigrator extends Plugin {
         });
 
         // auto-scan 
-        this.registerEvent(
-            this.app.metadataCache.on("resolve", async (file: TFile) => {
-                if (!this.settings.autoScan) return;
-
-                this.filesToScan.add(file);
-                this.processPendingScans();
-            })
-        );
+        this.app.workspace.onLayoutReady(() => {
+            this.registerEvent(
+                this.app.metadataCache.on("resolve", async (file: TFile) => {
+                    if (!this.settings.autoScan) return;
+                    if (file.extension !== "md") return;
+                    this.filesToScan.add(file);
+                    this.processPendingScans();
+                })
+            );
+        });
     }
 
     onunload() {
-        clearScannerCache();
+        this.scanner.clearScannerCache();
     }
 
     async loadSettings() {
@@ -87,7 +91,7 @@ export default class BacklinkMigrator extends Plugin {
         }
 
         new Notice("Scanning source folders...");
-        const results = runFullScan(this.app, this.settings);
+        const results = this.scanner.runFullScan(this.app, this.settings);
 
         if (results.length <= 0) {
             new Notice("No notes to move found");
