@@ -1,7 +1,6 @@
 import BacklinkMigrator from "main";
 import { FuzzySuggestModal, TFolder, App, Notice } from "obsidian";
 import { BMSettingTab } from "./settings-tab";
-import { isSource } from "utils/paths";
 
 export class FolderSuggestModal extends FuzzySuggestModal<TFolder> {
     plugin: BacklinkMigrator;
